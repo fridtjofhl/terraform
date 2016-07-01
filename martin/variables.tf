@@ -1,0 +1,16 @@
+variable "location" {}
+variable "resourceGroupName" {}
+variable "storageAccountType" {}
+variable "publicIPAddressName" {}
+variable "virtualNetworkName" {}
+variable "virtualNetworkAddressSpace" {}
+variable "subnetName" {}
+variable "subnetAddressPrefix" {}
+variable "nicName" {}
+variable "vmName" {}
+variable "vmSize" {}
+variable "imagePublisher" {}
+variable "imageOffer" {}
+variable "imageSKU" {}
+variable "adminUsername" {}
+variable "adminPassword" {}
