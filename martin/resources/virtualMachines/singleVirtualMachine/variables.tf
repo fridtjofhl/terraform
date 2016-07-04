@@ -1,0 +1,11 @@
+variable "resourceGroupName" {}
+variable "location" {}
+variable "name" {}
+variable "size" {}
+variable "imagePublisher" {}
+variable "imageOffer" {}
+variable "imageSKU" {}
+variable "adminUsername" {}
+variable "adminPassword" {}
+variable "networkInterfaceID" {}
+variable "storageAccountPrimaryBlobEndpoint" {}
