@@ -1,3 +1,15 @@
+variable "resourceGroupName" {}
+variable "location" {}
+variable "name" {}
+variable "size" {}
+variable "imagePublisher" {}
+variable "imageOffer" {}
+variable "imageSKU" {}
+variable "adminUsername" {}
+variable "adminPassword" {}
+variable "networkInterfaceID" {}
+variable "storageAccountPrimaryBlobEndpoint" {}
+
 resource "azurerm_virtual_machine" "vm" {
     name = "${var.name}"
     resource_group_name = "${var.resourceGroupName}"
@@ -11,7 +23,7 @@ resource "azurerm_virtual_machine" "vm" {
     }
     storage_os_disk {
         name = "${var.name}_osdisk"
-        vhd_uri = "${var.storageAccountPrimaryBlobEndpoint}vhds/${var.name}_osdisk.vhd"
+        vhd_uri = "${var.storageAccountPrimaryBlobEndpoint}vhds/${var.name}-osdisk.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }

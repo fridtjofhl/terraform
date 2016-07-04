@@ -1,3 +1,23 @@
+variable "subscription_id" {}
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+variable "location" {}
+variable "resourceGroupName" {}
+variable "storageAccountName" {}
+variable "storageAccountType" {}
+variable "virtualNetworkName" {}
+variable "virtualNetworkAddressSpace" {}
+variable "subnetName" {}
+variable "subnetAddressPrefix" {}
+variable "VMName" {}
+variable "VMSize" {}
+variable "imagePublisher" {}
+variable "imageOffer" {}
+variable "imageSKU" {}
+variable "adminUsername" {}
+variable "adminPassword" {}
+
 provider "azurerm" {
     subscription_id = "${var.subscription_id}"
     client_id = "${var.client_id}"
@@ -11,49 +31,31 @@ resource "azurerm_resource_group" "RG" {
 }
 
 module "storageAccount" {
-    source = "../storageAccount"
+    source = "../resources/storageAccount"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     location = "${var.location}"
     name = "${var.storageAccountName}"
     type = "${var.storageAccountType}"
 }
 
-module "dynamicIP" {
-    source = "../dynamicIP"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    location = "${var.location}"
-    name = "${var.publicIPAddressName}"
-}
-
-module "networkInterface" {
-    source = "../networkInterfaces/singleNetworkInterface"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    location = "${var.location}"
-    name = "${var.networkInterfaceName}"
-    publicIPAddressID = "${module.dynamicIP.id}"
-    subnetID = "${module.subnet.id}"
-}
-
 module "subnet" {
-    source = "../subnet"
+    source = "../resources/subnet"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     name = "${var.subnetName}"
     virtualNetworkName = "${var.virtualNetworkName}"
     addressPrefix = "${var.subnetAddressPrefix}"
-
-    depends_on = ["module.virtualNetwork"]
 }
 
 module "virtualNetwork" {
-    source = "../virtualNetwork"
+    source = "../resources/virtualNetwork"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     location = "${var.location}"
     name = "${var.virtualNetworkName}"
     addressSpace = "${var.virtualNetworkAddressSpace}"
 }
 
-module "virtualMachine" {
-    source = "../virtualMachines/singleVirtualMachine"
+module "publicVM" {
+    source = "../modules/singlePublicVM"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     location = "${var.location}"
     name = "${var.VMName}"
@@ -63,6 +65,6 @@ module "virtualMachine" {
     imageSKU = "${var.imageSKU}"
     adminUsername = "${var.adminUsername}"
     adminPassword = "${var.adminPassword}"
-    networkInterfaceID = "${module.networkInterface.id}"
     storageAccountPrimaryBlobEndpoint = "${module.storageAccount.primaryBlobEndpoint}"
+    subnetID = "${module.subnet.id}"
 }

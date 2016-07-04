@@ -1,3 +1,8 @@
+variable "resourceGroupName" {}
+variable "virtualNetworkName" {}
+variable "name" {}
+variable "addressPrefix" {}
+
 resource "azurerm_subnet" "subnet" {
     resource_group_name = "${var.resourceGroupName}"
     name = "${var.name}"

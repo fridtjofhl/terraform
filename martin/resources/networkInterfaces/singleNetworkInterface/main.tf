@@ -1,9 +1,15 @@
+variable "resourceGroupName" {}
+variable "location" {}
+variable "name" {}
+variable "subnetID" {}
+variable "publicIPAddressID" {}
+
 resource "azurerm_network_interface" "nic" {
     resource_group_name = "${var.resourceGroupName}"
     location = "${var.location}"
     name = "${var.name}"
     ip_configuration {
-        name = "${var.name}_ipconfig"
+        name = "${var.name}-ipconfig"
         subnet_id = "${var.subnetID}"
         private_ip_address_allocation = "Dynamic"
         public_ip_address_id = "${var.publicIPAddressID}"
