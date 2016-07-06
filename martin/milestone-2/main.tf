@@ -55,10 +55,10 @@ module "virtualNetwork" {
 }
 
 module "privateVMs" {
-    source = "../modules/multiplePrivateVMs"
+    source = "../modules/connectedVM"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     location = "${var.location}"
-    count = "2"
+    count = "1"
     name = "${var.VMName}-private"
     subnetID = "${module.subnet.id}"
     size = "${var.VMSize}"
@@ -71,7 +71,7 @@ module "privateVMs" {
 }
 
 module "publicVM" {
-    source = "../modules/singlePublicVM"
+    source = "../modules/publicVM"
     resourceGroupName = "${azurerm_resource_group.RG.name}"
     location = "${var.location}"
     name = "${var.VMName}-public"
@@ -86,5 +86,5 @@ module "publicVM" {
 }
 
 output "ipAddress" {
-    value = "${module.publicVM.ipAddress}"
+    value = "${module.publicVM.publicIPAddress}"
 }

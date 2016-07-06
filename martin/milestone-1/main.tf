@@ -19,52 +19,56 @@ variable "adminUsername" {}
 variable "adminPassword" {}
 
 provider "azurerm" {
-    subscription_id = "${var.subscription_id}"
-    client_id = "${var.client_id}"
-    client_secret = "${var.client_secret}"
-    tenant_id = "${var.tenant_id}"
+  subscription_id = "${var.subscription_id}"
+  client_id = "${var.client_id}"
+  client_secret = "${var.client_secret}"
+  tenant_id = "${var.tenant_id}"
 }
 
 resource "azurerm_resource_group" "RG" {
-    name = "${var.resourceGroupName}"
-    location = "${var.location}"
+  name = "${var.resourceGroupName}"
+  location = "${var.location}"
 }
 
 module "storageAccount" {
-    source = "../resources/storageAccount"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    location = "${var.location}"
-    name = "${var.storageAccountName}"
-    type = "${var.storageAccountType}"
+  source = "../resources/storageAccount"
+  resourceGroupName = "${azurerm_resource_group.RG.name}"
+  location = "${var.location}"
+  name = "${var.storageAccountName}"
+  type = "${var.storageAccountType}"
 }
 
 module "subnet" {
-    source = "../resources/subnet"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    name = "${var.subnetName}"
-    virtualNetworkName = "${var.virtualNetworkName}"
-    addressPrefix = "${var.subnetAddressPrefix}"
+  source = "../resources/subnet"
+  resourceGroupName = "${azurerm_resource_group.RG.name}"
+  name = "${var.subnetName}"
+  virtualNetworkName = "${var.virtualNetworkName}"
+  addressPrefix = "${var.subnetAddressPrefix}"
 }
 
 module "virtualNetwork" {
-    source = "../resources/virtualNetwork"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    location = "${var.location}"
-    name = "${var.virtualNetworkName}"
-    addressSpace = "${var.virtualNetworkAddressSpace}"
+  source = "../resources/virtualNetwork"
+  resourceGroupName = "${azurerm_resource_group.RG.name}"
+  location = "${var.location}"
+  name = "${var.virtualNetworkName}"
+  addressSpace = "${var.virtualNetworkAddressSpace}"
 }
 
 module "publicVM" {
-    source = "../modules/singlePublicVM"
-    resourceGroupName = "${azurerm_resource_group.RG.name}"
-    location = "${var.location}"
-    name = "${var.VMName}"
-    size = "${var.VMSize}"
-    imagePublisher = "${var.imagePublisher}"
-    imageOffer = "${var.imageOffer}"
-    imageSKU = "${var.imageSKU}"
-    adminUsername = "${var.adminUsername}"
-    adminPassword = "${var.adminPassword}"
-    storageAccountPrimaryBlobEndpoint = "${module.storageAccount.primaryBlobEndpoint}"
-    subnetID = "${module.subnet.id}"
+  source = "../modules/publicVM"
+  resourceGroupName = "${azurerm_resource_group.RG.name}"
+  location = "${var.location}"
+  name = "${var.VMName}"
+  size = "${var.VMSize}"
+  imagePublisher = "${var.imagePublisher}"
+  imageOffer = "${var.imageOffer}"
+  imageSKU = "${var.imageSKU}"
+  adminUsername = "${var.adminUsername}"
+  adminPassword = "${var.adminPassword}"
+  storageAccountPrimaryBlobEndpoint = "${module.storageAccount.primaryBlobEndpoint}"
+  subnetID = "${module.subnet.id}"
+}
+
+output "publicIPAddress" {
+  value = "${module.publicVM.publicIPAddress}"
 }
