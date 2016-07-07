@@ -38,20 +38,13 @@ module "storageAccount" {
   type = "${var.storageAccountType}"
 }
 
-module "subnet" {
-  source = "../resources/subnet"
-  resourceGroupName = "${azurerm_resource_group.RG.name}"
-  name = "${var.subnetName}"
-  virtualNetworkName = "${var.virtualNetworkName}"
-  addressPrefix = "${var.subnetAddressPrefix}"
-}
-
-module "virtualNetwork" {
-  source = "../resources/virtualNetwork"
+module "vnetWithSubnet" {
+  source = "../modules/vnetWithSubnets"
   resourceGroupName = "${azurerm_resource_group.RG.name}"
   location = "${var.location}"
   name = "${var.virtualNetworkName}"
   addressSpace = "${var.virtualNetworkAddressSpace}"
+  subnetAdditionalBits = "8"
 }
 
 module "publicVM" {
@@ -66,9 +59,13 @@ module "publicVM" {
   adminUsername = "${var.adminUsername}"
   adminPassword = "${var.adminPassword}"
   storageAccountPrimaryBlobEndpoint = "${module.storageAccount.primaryBlobEndpoint}"
-  subnetID = "${module.subnet.id}"
+  subnetID = "${module.vnetWithSubnet.subnetIDSplat}"
 }
 
 output "publicIPAddress" {
   value = "${module.publicVM.publicIPAddress}"
+}
+
+output "dummy" {
+  value = "Outputs are bugged"
 }
