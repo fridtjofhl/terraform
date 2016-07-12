@@ -1,12 +1,28 @@
-variable "resourceGroupName" {}
-variable "location" {}
+# AzureRM Network Interface
+
+/**
+This module creates 'n' network interfaces for the Azure cloud.
+*/
+
+variable "resourceGroupName" {
+  description = "The name of the resource group containing the NIC"
+}
+variable "location" {
+  description = "The geographical location of the NIC"
+}
 variable "count" {
   default = "1"
+  description = "The number of NIC instances to create"
 }
-variable "name" {}
-variable "subnetID" {}
+variable "name" {
+  description = "The name of the NIC"
+}
+variable "subnetID" {
+  description = "The ID of the subnet to put the NIC in"
+}
 variable "publicIPAddressID" {
   default = ""
+  description = "The ID of a public IP-Address associated with the NIC. Leave blank for none"
 }
 
 resource "azurerm_network_interface" "nic" {
@@ -22,6 +38,9 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+/**
+String of IDs separated by commas.
+*/
 output "idSplat" {
   value = "${join(",", azurerm_network_interface.nic.*.id)}"
 }
