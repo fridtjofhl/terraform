@@ -1,15 +1,16 @@
+#milestone-2
+
 variable "subscription_id" {}
 variable "client_id" {}
 variable "client_secret" {}
 variable "tenant_id" {}
-variable "location" {}
 variable "resourceGroupName" {}
+variable "location" {}
 variable "storageAccountName" {}
 variable "storageAccountType" {}
 variable "virtualNetworkName" {}
 variable "virtualNetworkAddressSpace" {}
-variable "subnetName" {}
-variable "subnetAddressPrefix" {}
+variable "subnetAdditionalBits" {}
 variable "VMName" {}
 variable "VMSize" {}
 variable "imagePublisher" {}
@@ -44,14 +45,30 @@ module "vnetWithSubnet" {
   location = "${var.location}"
   name = "${var.virtualNetworkName}"
   addressSpace = "${var.virtualNetworkAddressSpace}"
-  subnetAdditionalBits = "8"
+  subnetAdditionalBits = "${var.subnetAdditionalBits}"
+}
+
+module "privateVMs" {
+  source = "../modules/connectedVM"
+  resourceGroupName = "${azurerm_resource_group.RG.name}"
+  location = "${var.location}"
+  count = "1"
+  name = "${var.VMName}-private"
+  subnetID = "${module.vnetWithSubnet.subnetIDSplat}"
+  size = "${var.VMSize}"
+  imagePublisher = "${var.imagePublisher}"
+  imageOffer = "${var.imageOffer}"
+  imageSKU = "${var.imageSKU}"
+  adminUsername = "${var.adminUsername}"
+  adminPassword = "${var.adminPassword}"
+  storageAccountPrimaryBlobEndpoint = "${module.storageAccount.primaryBlobEndpoint}"
 }
 
 module "publicVM" {
   source = "../modules/publicVM"
   resourceGroupName = "${azurerm_resource_group.RG.name}"
   location = "${var.location}"
-  name = "${var.VMName}"
+  name = "${var.VMName}-public"
   size = "${var.VMSize}"
   imagePublisher = "${var.imagePublisher}"
   imageOffer = "${var.imageOffer}"
@@ -62,10 +79,6 @@ module "publicVM" {
   subnetID = "${module.vnetWithSubnet.subnetIDSplat}"
 }
 
-output "publicIPAddress" {
-  value = "${module.publicVM.publicIPAddress}"
-}
-
-output "dummy" {
-  value = "Outputs are bugged"
+output "ipAddress" {
+    value = "${module.publicVM.publicIPAddress}"
 }

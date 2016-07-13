@@ -1,3 +1,4 @@
+#connectedVM
 variable "resourceGroupName" {}
 variable "location" {}
 variable "count" {
